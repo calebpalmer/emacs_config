@@ -43,28 +43,7 @@
 (add-hook 'compilation-mode-hook 'my-compilation-mode-hook)
 ;; compilation mode hook
 
-;; Irony Mode for c/c++ completion
-;;; This stuff depends on bear to generate a compilation database.
-;;; make initial compilation database with "bear make"
-;;; You can add this to a project director:
-;;; ((nil . ((compile-command . "bear -a make"))))
-;; (add-hook 'c-mode-hook 'irony-mode)
 (add-hook 'c-mode-hook 'linum-mode)
-
-;; (add-hook 'c-mode-common-hook
-;;           (lambda ()
-;;             (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
-;;               (ggtags-mode 1))))
-
-;; (defun my-irony-mode-hook ()
-;;   (define-key irony-mode-map
-;;       [remap completion-at-point] 'counsel-irony)
-;;   (define-key irony-mode-map
-;;     [remap complete-symbol] 'counsel-irony))
-
-;; (add-hook 'irony-mode-hook 'my-irony-mode-hook)
-;; (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
-;; End Irony Mode
 
 
 ;; c++ stuff
@@ -80,19 +59,8 @@
   (push 'company-rtags company-backends)
   (define-key c-mode-base-map (kbd "<C-tab>") (function company-complete))
   
-  ;; (irony-mode 1)
   ;;(flycheck-mode 1)
   (linum-mode 1)
-  ;; (eval-after-load 'company
-  ;;   '(add-to-list 'company-backends 'company-irony))
-
-  ;; (eval-after-load 'flycheck
-  ;;   '(add-hook 'flycheck-mode-hook #'flycheck-irony-setup))
-
-  ;; (lambda ()
-  ;;   (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
-  ;;     (ggtags-mode 1)))
-
 
   ;; keybindings
   (global-set-key (kbd "M-.") 'rtags-find-symbol-at-point)
@@ -107,49 +75,6 @@
 
 (add-hook 'c++-mode-hook 'my-c++-mode-hook)
 ;;
-
-;; gdb
-(setq gdb-show-main t)
-
-;; override this function to customize gdb window setup
-(defun gdb-setup-windows ()
-  "Layout the window pattern for option `gdb-many-windows'."
-  (gdb-get-buffer-create 'gdb-locals-buffer)
-  (gdb-get-buffer-create 'gdb-stack-buffer)
-  (gdb-get-buffer-create 'gdb-breakpoints-buffer)
-  (set-window-dedicated-p (selected-window) nil)
-  (switch-to-buffer gud-comint-buffer)
-  (delete-other-windows)
-  (let ((win0 (selected-window))
-        (win1 (split-window nil ( / ( * (window-height) 3) 4)))
-        (win2 (split-window nil ( / (window-height) 3)))
-        (win3 (split-window-right)))
-    (gdb-set-window-buffer (gdb-locals-buffer-name) nil win3)
-    (select-window win2)
-    (set-window-buffer
-     win2
-     (if gud-last-last-frame
-         (gud-find-file (car gud-last-last-frame))
-       (if gdb-main-file
-           (gud-find-file gdb-main-file)
-         ;; Put buffer list in window if we
-         ;; can't find a source file.
-         (list-buffers-noselect))))
-    (setq gdb-source-window (selected-window))
-    (let ((win4 (split-window-right)))
-      (gdb-set-window-buffer
-       (gdb-get-buffer-create 'gdb-inferior-io) nil win4))
-    (select-window win1)
-    (gdb-set-window-buffer (gdb-stack-buffer-name))
-    (let ((win5 (split-window-right)))
-      (gdb-set-window-buffer (if gdb-show-threads-by-default
-                                 (gdb-threads-buffer-name)
-                               (gdb-breakpoints-buffer-name))
-                             nil win5))
-    (select-window win0)))
-
-
-
 
 ;; custom set variables
 (custom-set-variables
